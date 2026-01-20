@@ -1,8 +1,9 @@
-#ifndef sudoku.hpp
-#define sudoku.hpp
+#pragma once 
 #include <iostream>
 #include <vector>
 #include <complex>
+#include "grille.hpp"
+#include <list>
 using namespace std ;
 using suint = unsigned int ;
 

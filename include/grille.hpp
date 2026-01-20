@@ -1,5 +1,4 @@
-#ifndef grille.hpp
-#define grille.hpp
+#pragma once
 #include <iostream>
 #include <vector>
 #include <complex>
