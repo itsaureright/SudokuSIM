@@ -119,3 +119,4 @@ void Grille::afficher() const
         std::cout << "-";
     std::cout << '\n';
 }
+
