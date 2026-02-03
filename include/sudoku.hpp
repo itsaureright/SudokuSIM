@@ -19,14 +19,14 @@ class Sudoku
     Sudoku(int ordre, int nbcase, bool allSol, bool uniqueSol) ; 
     void Solve() ;  // Pour résoudre la grille
     bool isValid(const Grille& g, int ligne, int col, int val);  // Vérifie que le placement d'un chiffre est ok
-
+    bool solveRec(Grille& g, vector<pair<suint,suint>>& cases, size_t idx);
 private:   
     std::pair<int,int> blocCoords(int ligne, int col) const; // Coordonnées des blocs
 };
 
 //Constructeurs
 
-inline Sudoku::Sudoku(int ordre, int nbcase, bool allSol, bool uniqueSol) : ordre(ordre), nbcase(nbcase), allSol(allSol), uniqueSol(uniqueSol) {}
+inline Sudoku::Sudoku(int ordre, int nbcase, bool allSol, bool uniqueSol): ordre(ordre), nbcase(nbcase), allSol(allSol), uniqueSol(uniqueSol),grille_ini(ordre){}
 
 //Fonctions
 
@@ -63,9 +63,57 @@ inline bool Sudoku::isValid(const Grille& g, int ligne, int col, int val)
     return true; 
 }
 
+inline bool Sudoku::solveRec(Grille& g, vector<pair<suint,suint>>& cases, size_t idx)
+{
+    if (idx == cases.size()) {
+        return true;
+    }
+
+    suint i = cases[idx].first;
+    suint j = cases[idx].second;
+
+    if (g.grille[i][j] != 0) {
+        return solveRec(g, cases, idx+1);
+    }
+
+    vector<suint> valad = g.valeursAdmissibles(i, j);
+
+    for (suint v : valad) {
+
+        if (isValid(g, i, j, v)) {
+
+            g.grille[i][j] = v;
+
+            bool ok = solveRec(g, cases, idx+1);
+            if (ok) return true;
+        }
+        g.grille[i][j] = 0;
+    }
+
+    return false;
+}
+
+
+
 inline void Sudoku::Solve() { 
-    vector<pair<suint, suint>> cases = grille_ini.casesVides;
-    
+    Grille g = grille_ini;
+
+    g.n = ordre;                 
+    suint N = g.n * g.n;         
+
+    g.casesVides.clear();        
+    for (suint i = 0; i < N; ++i)
+        for (suint j = 0; j < N; ++j)
+            if (g.grille[i][j] == 0)
+                g.casesVides.push_back({i, j});
+
+    bool ok = solveRec(g, g.casesVides, 0);  
+
+    if (!ok) {
+        cout << "pas de solution";
+    } else {
+        grille_sol.push_back(g);             
+    }
 }
 
 

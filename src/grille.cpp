@@ -4,6 +4,9 @@
 #include <algorithm> // Pour std::find
 using suint = unsigned int ;
 
+//Constructeur
+Grille::Grille(suint ordre) { n = ordre; grille.resize(n*n, vector<int>(n*n, 0)); }
+
 vector<suint> Grille::valeursAdmissibles(suint i, suint j)
 {
     vl.clear(); vc.clear(); vb.clear(); vs.clear();
@@ -62,7 +65,6 @@ void Grille::genererGrillePartielle(suint p)
         suint k = rand() % casesVides.size();
         suint i = casesVides[k].first;
         suint j = casesVides[k].second;
-        cout << "Case tirée : (" << i << ", " << j << ")\n";
 
         // valeurs admissibles
         vector<suint> admissibles = valeursAdmissibles(i, j);
