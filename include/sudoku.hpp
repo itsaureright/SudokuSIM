@@ -26,17 +26,17 @@ private:
 
 //Constructeurs
 
-Sudoku::Sudoku(int ordre, int nbcase, bool allSol, bool uniqueSol) : ordre(ordre), nbcase(nbcase), allSol(allSol), uniqueSol(uniqueSol) {}
+inline Sudoku::Sudoku(int ordre, int nbcase, bool allSol, bool uniqueSol) : ordre(ordre), nbcase(nbcase), allSol(allSol), uniqueSol(uniqueSol) {}
 
 //Fonctions
 
-std::pair<int,int> Sudoku::blocCoords(int ligne, int col) const { 
+inline pair<int,int> Sudoku::blocCoords(int ligne, int col) const { 
     int n = ordre;
     int blocL = (ligne / n) * n; 
     int blocC = (col / n) * n; 
     return {blocL, blocC}; }
 
-bool Sudoku::isValid(const Grille& g, int ligne, int col, int val)
+inline bool Sudoku::isValid(const Grille& g, int ligne, int col, int val)
 {   vector<vector<int>> grille = g.grille;
     int n = ordre;
     // Vérifier la ligne
@@ -63,7 +63,7 @@ bool Sudoku::isValid(const Grille& g, int ligne, int col, int val)
     return true; 
 }
 
-void Sudoku::Solve() { 
+inline void Sudoku::Solve() { 
     vector<pair<suint, suint>> cases = grille_ini.casesVides;
     
 }
