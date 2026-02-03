@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <algorithm> // Pour std::find
+using suint = unsigned int ;
 
 vector<suint> Grille::valeursAdmissibles(suint i, suint j) {
     // 1. On vide nos vecteurs de travail
@@ -9,8 +10,8 @@ vector<suint> Grille::valeursAdmissibles(suint i, suint j) {
 
     // 2. Récupérer les valeurs présentes sur la ligne i et la colonne j
     for (suint k = 0; k < n; ++k) {
-        if ((*this)[i][k] != 0) vl.push_back((*this)[i][k]);
-        if ((*this)[k][j] != 0) vc.push_back((*this)[k][j]);
+        if ((grille)[i][k] != 0) vl.push_back((grille)[i][k]);
+        if ((grille)[k][j] != 0) vc.push_back((grille)[k][j]);
     }
 
     // 3. Récupérer les valeurs du bloc
@@ -20,7 +21,7 @@ vector<suint> Grille::valeursAdmissibles(suint i, suint j) {
 
     for (suint r = debutI; r < debutI + tailleBloc; ++r) {
         for (suint c = debutJ; c < debutJ + tailleBloc; ++c) {
-            if ((*this)[r][c] != 0) vb.push_back((*this)[r][c]);
+            if ((grille)[r][c] != 0) vb.push_back((grille)[r][c]);
         }
     }
 
@@ -50,7 +51,7 @@ void Grille::genererGrillePartielle(suint p)
 {   // remise à zéro
     for (suint i = 0; i < n; ++i)
         for (suint j = 0; j < n; ++j)
-            (*this)[i][j] = 0;
+            (grille)[i][j] = 0;
     casesVides.clear();
     for (suint i = 0; i < n; ++i)
         for (suint j = 0; j < n; ++j)
@@ -71,7 +72,7 @@ void Grille::genererGrillePartielle(suint p)
         {
             // choisir une valeur admissible aléatoire
             suint v = admissibles[rand() % admissibles.size()];
-            (*this)[i][j] = v;
+            (grille)[i][j] = v;
             nbRemplies++;
 
             // retirer la case de casesVides
@@ -85,3 +86,36 @@ void Grille::genererGrillePartielle(suint p)
     }
 }
 
+void Grille::afficher() const
+{
+    int N = n * n;
+
+    for (int i = 0; i < N; ++i) {
+
+        // Séparation horizontale entre blocs
+        if (i % n == 0) {
+            for (suint k = 0; k < N * 2 + n + 1; ++k)
+                std::cout << "-";
+            std::cout << '\n';
+        }
+
+        for (int j = 0; j < N; ++j) {
+
+            // Séparation verticale entre blocs
+            if (j % n == 0)
+                std::cout << "| ";
+
+            if ((grille)[i][j] == 0)
+                std::cout << ". ";
+            else
+                std::cout << (grille)[i][j] << " ";
+        }
+
+        std::cout << "|\n";
+    }
+
+    // Dernière ligne
+    for (suint k = 0; k < N * 2 + n + 1; ++k)
+        std::cout << "-";
+    std::cout << '\n';
+}

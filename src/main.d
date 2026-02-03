@@ -1,1 +1,1 @@
-src/main.o: src/main.cpp
+src/main.o: src/main.cpp include/grille.hpp include/sudoku.hpp

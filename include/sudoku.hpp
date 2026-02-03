@@ -37,16 +37,17 @@ std::pair<int,int> Sudoku::blocCoords(int ligne, int col) const {
     return {blocL, blocC}; }
 
 bool Sudoku::isValid(const Grille& g, int ligne, int col, int val)
-{   int n = ordre;
+{   vector<vector<int>> grille = g.grille;
+    int n = ordre;
     // Vérifier la ligne
-    for (int j = 0; j < g[ligne].size(); j++) {
-        if (j != col && g[ligne][j] == val)
+    for (int j = 0; j < grille[ligne].size(); j++) {
+        if (j != col && grille[ligne][j] == val)
             return false;
     }
 
     // Vérifier la colonne
-    for (int i = 0; i < g.size(); i++) {
-        if (i != ligne && g[i][col] == val)
+    for (int i = 0; i < grille.size(); i++) {
+        if (i != ligne && grille[i][col] == val)
             return false;
     }
 
@@ -54,7 +55,7 @@ bool Sudoku::isValid(const Grille& g, int ligne, int col, int val)
     auto [blocL, blocC] = blocCoords(ligne, col); 
     for (int i = 0; i < n; i++){
         for (int j = 0; j < n; j++){
-            if ((blocL + i != ligne || blocC + j != col) && g[blocL + i][blocC + j] == val){
+            if ((blocL + i != ligne || blocC + j != col) && grille[blocL + i][blocC + j] == val){
                 return false; }
             }
         }
@@ -66,3 +67,5 @@ void Sudoku::Solve() {
     vector<pair<suint, suint>> cases = grille_ini.casesVides;
     
 }
+
+
