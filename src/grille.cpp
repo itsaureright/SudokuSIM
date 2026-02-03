@@ -4,57 +4,55 @@
 #include <algorithm> // Pour std::find
 using suint = unsigned int ;
 
-vector<suint> Grille::valeursAdmissibles(suint i, suint j) {
-    // 1. On vide nos vecteurs de travail
+vector<suint> Grille::valeursAdmissibles(suint i, suint j)
+{
     vl.clear(); vc.clear(); vb.clear(); vs.clear();
 
-    // 2. Récupérer les valeurs présentes sur la ligne i et la colonne j
-    for (suint k = 0; k < n; ++k) {
-        if ((grille)[i][k] != 0) vl.push_back((grille)[i][k]);
-        if ((grille)[k][j] != 0) vc.push_back((grille)[k][j]);
+    suint N = n * n;
+
+    // Ligne + colonne
+    for (suint k = 0; k < N; ++k) {
+        if (grille[i][k] != 0) vl.push_back(grille[i][k]);
+        if (grille[k][j] != 0) vc.push_back(grille[k][j]);
     }
 
-    // 3. Récupérer les valeurs du bloc
-    suint tailleBloc = sqrt(n);
-    suint debutI = (i / tailleBloc) * tailleBloc;
-    suint debutJ = (j / tailleBloc) * tailleBloc;
+    // Bloc
+    suint debutI = (i / n) * n;
+    suint debutJ = (j / n) * n;
 
-    for (suint r = debutI; r < debutI + tailleBloc; ++r) {
-        for (suint c = debutJ; c < debutJ + tailleBloc; ++c) {
-            if ((grille)[r][c] != 0) vb.push_back((grille)[r][c]);
+    for (suint r = debutI; r < debutI + n; ++r) {
+        for (suint c = debutJ; c < debutJ + n; ++c) {
+            if (grille[r][c] != 0)
+                vb.push_back(grille[r][c]);
         }
     }
 
-    // 4. Déterminer les valeurs admissibles (ce qui n'est ni dans vl, ni vc, ni vb)
-    for (suint v = 1; v <= n; ++v) {
+    // Valeurs admissibles
+    for (suint v = 1; v <= N; ++v) {
         bool interdit = false;
-        
-        // On vérifie si v est dans un des vecteurs de travail
-        for(auto val : vl) if(val == v) interdit = true;
-        if(!interdit) {
-            for(auto val : vc) if(val == v) interdit = true;
-        }
-        if(!interdit) {
-            for(auto val : vb) if(val == v) interdit = true;
-        }
 
-        if (!interdit) {
+        for (auto x : vl) if (x == v) interdit = true;
+        for (auto x : vc) if (x == v) interdit = true;
+        for (auto x : vb) if (x == v) interdit = true;
+
+        if (!interdit)
             vs.push_back(v);
-        }
     }
 
-    return vs; 
+    return vs;
 }
+
 
 
 void Grille::genererGrillePartielle(suint p)
 {   // remise à zéro
-    for (suint i = 0; i < n; ++i)
-        for (suint j = 0; j < n; ++j)
+    suint N = n*n ;
+    for (suint i = 0; i < N; ++i)
+        for (suint j = 0; j < N; ++j)
             (grille)[i][j] = 0;
     casesVides.clear();
-    for (suint i = 0; i < n; ++i)
-        for (suint j = 0; j < n; ++j)
+    for (suint i = 0; i < N; ++i)
+        for (suint j = 0; j < N; ++j)
             casesVides.push_back({i, j});
 
     suint nbRemplies = 0;
@@ -64,6 +62,7 @@ void Grille::genererGrillePartielle(suint p)
         suint k = rand() % casesVides.size();
         suint i = casesVides[k].first;
         suint j = casesVides[k].second;
+        cout << "Case tirée : (" << i << ", " << j << ")\n";
 
         // valeurs admissibles
         vector<suint> admissibles = valeursAdmissibles(i, j);
@@ -74,6 +73,7 @@ void Grille::genererGrillePartielle(suint p)
             suint v = admissibles[rand() % admissibles.size()];
             (grille)[i][j] = v;
             nbRemplies++;
+            
 
             // retirer la case de casesVides
             casesVides.erase(casesVides.begin() + k);
