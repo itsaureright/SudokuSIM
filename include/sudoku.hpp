@@ -134,13 +134,6 @@ inline void Sudoku::Solve() {
 inline void Sudoku::preparerGrilleUnique() {
     suint N = ordre * ordre;
 
-    // Initialisation de la grille initiale à vide
-    grille_ini.n = ordre;
-    grille_ini.grille.assign(N, vector<int>(N, 0));
-
-    // Génération aléatoire d'une grille partiellement remplie
-    // nbcase est le nombre de cases que l'on veut remplir initialement
-    grille_ini.genererGrillePartielle(nbcase);
 
     // Vérifier si la grille a déjà une solution unique
     this->allSol = true;       // on veut récupérer toutes les solutions
