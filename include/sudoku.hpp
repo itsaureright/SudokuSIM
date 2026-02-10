@@ -66,7 +66,23 @@ inline bool Sudoku::isValid(const Grille& g, int ligne, int col, int val)
 inline bool Sudoku::solveRec(Grille& g, vector<pair<suint,suint>>& cases, size_t idx)
 {
     if (idx == cases.size()) {
-        return true;
+        grille_sol.push_back(g);
+
+        // Pour avoir toutes les solutions :
+        //return false;
+
+        //Pour avoir 2 solutions :
+
+        if (grille_sol.size()==2) {
+            uniqueSol = false ;
+            return true;
+        }
+        else {
+            uniqueSol = true ;
+            return false;
+        }
+
+
     }
 
     suint i = cases[idx].first;
@@ -85,6 +101,7 @@ inline bool Sudoku::solveRec(Grille& g, vector<pair<suint,suint>>& cases, size_t
             g.grille[i][j] = v;
 
             bool ok = solveRec(g, cases, idx+1);
+
             if (ok) return true;
         }
         g.grille[i][j] = 0;
@@ -109,11 +126,6 @@ inline void Sudoku::Solve() {
 
     bool ok = solveRec(g, g.casesVides, 0);  
 
-    if (!ok) {
-        cout << "pas de solution";
-    } else {
-        grille_sol.push_back(g);             
-    }
 }
 
 
