@@ -14,8 +14,10 @@ int main(int argc, char *argv[])
 {
     srand(time(nullptr));
 
-    Sudoku S(2, 2, false, false); 
-    S.grille_ini.genererGrillePartielle(2);
+    Sudoku S(3, 14, false, false); 
+    S.grille_ini.genererGrillePartielle(14);
+    S.grille_ini.afficher();
+    S.preparerGrilleUnique();
     S.grille_ini.afficher();
     S.Solve();
     for (const Grille& sol : S.grille_sol) {
