@@ -6,6 +6,7 @@
 #include <list>
 using namespace std ;
 using suint = unsigned int ;
+#include <SFML/Graphics.hpp>
 
 class Sudoku
 { public :
@@ -17,6 +18,7 @@ class Sudoku
     Grille grille_ini ; // grille initiale
     list<Grille> grille_sol ; // liste des grilles solutions
     void jouer();
+    void jouerGraphique();
     Sudoku(int ordre, int nbcase, bool allSol, bool uniqueSol) ; 
     void Solve() ;  // Pour résoudre la grille
     bool isValid(const Grille& g, int ligne, int col, int val);  // Vérifie que le placement d'un chiffre est ok
@@ -214,6 +216,7 @@ inline void Sudoku::preparerGrilleUnique() {
 
 inline void Sudoku::jouer()
 {
+    setenv("DISPLAY", ":0", 1);
     Grille g = grille_ini;
     suint N = ordre * ordre;
     
@@ -284,5 +287,167 @@ inline void Sudoku::jouer()
             g.afficher();
             break;
         }
+    }
+}
+
+
+
+///Interface graphique :
+
+inline void Sudoku::jouerGraphique()
+{
+    Grille g = grille_ini;
+    suint N = ordre * ordre;
+
+    const int tailleCase = 60;
+    const int tailleFenetre = N * tailleCase;
+
+    sf::RenderWindow window(
+        sf::VideoMode(tailleFenetre, tailleFenetre),
+        "Sudoku"
+    );
+
+    sf::Font font;
+    if (!font.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"))
+    {
+        std::cout << "Erreur chargement police\n";
+        return;
+    }
+
+    int selectionL = -1;
+    int selectionC = -1;
+
+    while (window.isOpen())
+    {
+        sf::Event event;
+        while (window.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
+                window.close();
+
+            // CLIC SOURIS
+            if (event.type == sf::Event::MouseButtonPressed)
+            {
+                int x = event.mouseButton.x / tailleCase;
+                int y = event.mouseButton.y / tailleCase;
+
+                if (x < N && y < N)
+                {
+                    selectionL = y;
+                    selectionC = x;
+                }
+            }
+
+            // CLAVIER
+            if (event.type == sf::Event::KeyPressed && selectionL != -1 && selectionC != -1)
+{
+    int val = 0;
+
+    switch(event.key.code)
+    {
+        // Clavier principal
+        case sf::Keyboard::Num1: val = 1; break;
+        case sf::Keyboard::Num2: val = 2; break;
+        case sf::Keyboard::Num3: val = 3; break;
+        case sf::Keyboard::Num4: val = 4; cout<<"OK" ; break;
+        case sf::Keyboard::Num5: val = 5; break;
+        case sf::Keyboard::Num6: val = 6; break;
+        case sf::Keyboard::Num7: val = 7; break;
+        case sf::Keyboard::Num8: val = 8; break;
+        case sf::Keyboard::Num9: val = 9; break;
+
+        // Pavé numérique
+        case sf::Keyboard::Numpad1: val = 1; break;
+        case sf::Keyboard::Numpad2: val = 2; break;
+        case sf::Keyboard::Numpad3: val = 3; break;
+        case sf::Keyboard::Numpad4: val = 4; break;
+        case sf::Keyboard::Numpad5: val = 5; break;
+        case sf::Keyboard::Numpad6: val = 6; break;
+        case sf::Keyboard::Numpad7: val = 7; break;
+        case sf::Keyboard::Numpad8: val = 8; break;
+        case sf::Keyboard::Numpad9: val = 9; break;
+
+        case 51: val = 4; break;
+        
+        default: cout << event.key.code ;
+    }
+
+    // Mettre la valeur si la case était vide
+    if (val != 0 && grille_ini.grille[selectionL][selectionC] == 0)
+        g.grille[selectionL][selectionC] = val;
+
+    // Effacer avec Backspace
+    if (event.key.code == sf::Keyboard::BackSpace)
+    {
+        if (grille_ini.grille[selectionL][selectionC] == 0)
+            g.grille[selectionL][selectionC] = 0;
+    }
+}
+        }
+        
+
+        window.clear(sf::Color::White);
+
+        // Dessiner la grille
+        for (suint i = 0; i < N; ++i)
+        {
+            for (suint j = 0; j < N; ++j)
+            {
+                sf::RectangleShape caseRect(
+                    sf::Vector2f(tailleCase, tailleCase)
+                );
+
+                caseRect.setPosition(j * tailleCase, i * tailleCase);
+                caseRect.setFillColor(sf::Color::White);
+                caseRect.setOutlineColor(sf::Color::Black);
+                caseRect.setOutlineThickness(1);
+
+                // surbrillance sélection
+                if (i == selectionL && j == selectionC)
+                    caseRect.setFillColor(sf::Color(220, 220, 250));
+
+                window.draw(caseRect);
+
+                if (g.grille[i][j] != 0)
+                {
+                    sf::Text text;
+                    text.setFont(font);
+                    text.setString(std::to_string(g.grille[i][j]));
+                    text.setCharacterSize(24);
+                    text.setFillColor(
+                        grille_ini.grille[i][j] != 0 ?
+                        sf::Color::Black :
+                        sf::Color::Blue
+                    );
+
+                    text.setPosition(
+                        j * tailleCase + tailleCase / 3,
+                        i * tailleCase + tailleCase / 5
+                    );
+
+                    window.draw(text);
+                }
+            }
+        }
+
+        // Lignes épaisses pour blocs
+        for (suint i = 0; i <= N; i += ordre)
+        {
+            sf::RectangleShape ligne(
+                sf::Vector2f(tailleFenetre, 3)
+            );
+            ligne.setPosition(0, i * tailleCase);
+            ligne.setFillColor(sf::Color::Black);
+            window.draw(ligne);
+
+            sf::RectangleShape col(
+                sf::Vector2f(3, tailleFenetre)
+            );
+            col.setPosition(i * tailleCase, 0);
+            col.setFillColor(sf::Color::Black);
+            window.draw(col);
+        }
+
+        window.display();
     }
 }

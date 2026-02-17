@@ -79,6 +79,6 @@ int main(int argc, char *argv[])
         S.grille_ini.genererGrillePartielle(nbCases);
         return 0; // ou relancer une generation
 }
-    S.jouer();
+    S.jouerGraphique();;
 }
 }
