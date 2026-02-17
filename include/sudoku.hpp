@@ -16,7 +16,7 @@ class Sudoku
     void preparerGrilleUnique(); //Génère une grille unique
     Grille grille_ini ; // grille initiale
     list<Grille> grille_sol ; // liste des grilles solutions
-
+    void jouer();
     Sudoku(int ordre, int nbcase, bool allSol, bool uniqueSol) ; 
     void Solve() ;  // Pour résoudre la grille
     bool isValid(const Grille& g, int ligne, int col, int val);  // Vérifie que le placement d'un chiffre est ok
@@ -180,4 +180,81 @@ inline void Sudoku::preparerGrilleUnique() {
     // À ce stade, la grille est à solution unique
     uniqueSol = true;
     grille_sol.clear();
+}
+
+
+
+inline void Sudoku::jouer()
+{
+    Grille g = grille_ini;
+    suint N = ordre * ordre;
+    
+    while (true)
+    {
+        g.afficher();
+
+        cout << "\nEntre ligne colonne valeur (ex: 1 3 5)\n";
+        cout << "Tape 0 0 0 pour quitter.\n";
+
+        int ligne, col, val;
+        if (!(cin >> ligne >> col >> val))
+{
+    cout << "Entree invalide ! Tape trois nombres.\n";
+    cin.clear();                // enlève l'état d'erreur
+    cin.ignore(10000, '\n');    // vide le buffer
+    continue;
+}
+
+
+        if (ligne == 0 && col == 0 && val == 0)
+        {
+            cout << "Fin du jeu.\n";
+            break;
+        }
+
+        // Ajustement car utilisateur pense en base 1
+        ligne--;
+        col--;
+
+        if (ligne < 0 || ligne >= N || col < 0 || col >= N)
+        {
+            cout << "Coordonnees invalides !\n";
+            continue;
+        }
+
+        if (g.grille[ligne][col] != 0)
+        {
+            cout << "Case deja remplie !\n";
+            continue;
+        }
+
+        if (val < 1 || val > N)
+        {
+            cout << "Valeur invalide !\n";
+            continue;
+        }
+
+        if (isValid(g, ligne, col, val))
+        {
+            g.grille[ligne][col] = val;
+        }
+        else
+        {
+            cout << "Coup invalide !\n";
+        }
+
+        // Vérifier si grille complète
+        bool complete = true;
+        for (suint i = 0; i < N; ++i)
+            for (suint j = 0; j < N; ++j)
+                if (g.grille[i][j] == 0)
+                    complete = false;
+
+        if (complete)
+        {
+            cout << "\nBravo ! Sudoku termine !\n";
+            g.afficher();
+            break;
+        }
+    }
 }
