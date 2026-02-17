@@ -21,6 +21,7 @@ class Sudoku
     void Solve() ;  // Pour résoudre la grille
     bool isValid(const Grille& g, int ligne, int col, int val);  // Vérifie que le placement d'un chiffre est ok
     bool solveRec(Grille& g, vector<pair<suint,suint>>& cases, size_t idx);
+    bool isValidDiag(const Grille& g, int ligne, int col, int val);
 private:   
     std::pair<int,int> blocCoords(int ligne, int col) const; // Coordonnées des blocs
 };
@@ -32,12 +33,16 @@ inline Sudoku::Sudoku(int ordre, int nbcase, bool allSol, bool uniqueSol): ordre
 //Fonctions
 
 
+//coordonnées des Blocs 
 
 inline pair<int,int> Sudoku::blocCoords(int ligne, int col) const { 
     int n = ordre;
     int blocL = (ligne / n) * n; 
     int blocC = (col / n) * n; 
     return {blocL, blocC}; }
+
+
+//Cases valides pour le Sudoku Classique
 
 inline bool Sudoku::isValid(const Grille& g, int ligne, int col, int val)
 {   vector<vector<int>> grille = g.grille;
@@ -65,6 +70,36 @@ inline bool Sudoku::isValid(const Grille& g, int ligne, int col, int val)
 
     return true; 
 }
+
+
+//Cases valides pour le Sudoku Diagonal
+
+inline bool Sudoku::isValidDiag(const Grille& g, int ligne, int col, int val){
+    suint N = g.n * g.n ;
+    bool ok = isValid(g, ligne, col, val);
+    if(!ok) {
+        return false;
+    }
+    else{
+        //diag directe
+        if(ligne == col){
+            for(int i = 0; i<N;++i){
+                if (g.grille[i][i]==val){
+                    return false;
+                }
+            }
+        }
+        //diag indirecte
+        if( ligne+col+1 == N){
+            for(int i = 0; i<N;++i){
+                if (g.grille[i][N-i-1]==val){
+                    return false; }
+                }
+        }
+    }
+}
+
+// Pour résoudre
 
 inline bool Sudoku::solveRec(Grille& g, vector<pair<suint,suint>>& cases, size_t idx)
 {
@@ -134,13 +169,6 @@ inline void Sudoku::Solve() {
 inline void Sudoku::preparerGrilleUnique() {
     suint N = ordre * ordre;
 
-    // Initialisation de la grille initiale à vide
-    grille_ini.n = ordre;
-    grille_ini.grille.assign(N, vector<int>(N, 0));
-
-    // Génération aléatoire d'une grille partiellement remplie
-    // nbcase est le nombre de cases que l'on veut remplir initialement
-    grille_ini.genererGrillePartielle(nbcase);
 
     // Vérifier si la grille a déjà une solution unique
     this->allSol = true;       // on veut récupérer toutes les solutions
