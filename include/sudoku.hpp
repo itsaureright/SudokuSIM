@@ -250,13 +250,13 @@ inline void Sudoku::jouer()
             continue;
         }
 
-        if (g.grille[ligne][col] != 0)
+        if (grille_ini.grille[ligne][col] != 0)
         {
             cout << "Case deja remplie !\n";
             continue;
         }
 
-        if (val < 1 || val > N)
+        if (val < 0 || val > N)
         {
             cout << "Valeur invalide !\n";
             continue;

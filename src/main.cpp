@@ -74,7 +74,9 @@ int main(int argc, char *argv[])
     S.Solve();
 
     if (S.grille_sol.empty()) {
-        cout << "La grille generee n'a aucune solution ! Regeneration...\n";
+        cout << "La grille generee n'a aucune solution ! essaye avec moins de chiffres. Regeneration...\n";
+        cout << "Donne le nombre de cases a remplir initialement : ";
+        S.grille_ini.genererGrillePartielle(nbCases);
         return 0; // ou relancer une generation
 }
     S.jouer();
