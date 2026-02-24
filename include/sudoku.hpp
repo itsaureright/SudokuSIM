@@ -368,8 +368,10 @@ inline void Sudoku::jouerGraphique()
         case sf::Keyboard::Numpad9: val = 9; break;
 
         case 51: val = 4; break;
+        case 56: val = 6; break;
+
         
-        default: cout << event.key.code ;
+        default: cout << "problème : entrée nom reconnue. Entrée reçue :" << event.key.code ;
     }
 
     // Mettre la valeur si la case était vide
