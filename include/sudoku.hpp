@@ -15,14 +15,17 @@ class Sudoku
     bool allSol=false; // recherche de toutes les solutions si true
     bool uniqueSol=false; // pour le test d’unicité
     void preparerGrilleUnique(); //Génère une grille unique
+    void preparerGrilleUniqueDiag(); //Génère une grille unique Diagonale
     Grille grille_ini ; // grille initiale
     list<Grille> grille_sol ; // liste des grilles solutions
     void jouer();
     void jouerGraphique();
     Sudoku(int ordre, int nbcase, bool allSol, bool uniqueSol) ; 
     void Solve() ;  // Pour résoudre la grille
+    void SolveDiag() ;  // Pour résoudre la grille
     bool isValid(const Grille& g, int ligne, int col, int val);  // Vérifie que le placement d'un chiffre est ok
     bool solveRec(Grille& g, vector<pair<suint,suint>>& cases, size_t idx);
+    bool solveRecDiag(Grille& g, vector<pair<suint,suint>>& cases, size_t idx);
     bool isValidDiag(const Grille& g, int ligne, int col, int val);
 private:   
     std::pair<int,int> blocCoords(int ligne, int col) const; // Coordonnées des blocs
@@ -99,6 +102,7 @@ inline bool Sudoku::isValidDiag(const Grille& g, int ligne, int col, int val){
                 }
         }
     }
+    return true;
 }
 
 // Pour résoudre
@@ -150,6 +154,52 @@ inline bool Sudoku::solveRec(Grille& g, vector<pair<suint,suint>>& cases, size_t
     return false;
 }
 
+inline bool Sudoku::solveRecDiag(Grille& g, vector<pair<suint,suint>>& cases, size_t idx)
+{
+    if (idx == cases.size()) {
+        grille_sol.push_back(g);
+
+        // Pour avoir toutes les solutions :
+        //return false;
+
+        //Pour avoir 2 solutions :
+
+        if (grille_sol.size()==2) {
+            uniqueSol = false ;
+            return true;
+        }
+        else {
+            uniqueSol = true ;
+            return false;
+        }
+
+
+    }
+
+    suint i = cases[idx].first;
+    suint j = cases[idx].second;
+
+    if (g.grille[i][j] != 0) {
+        return solveRecDiag(g, cases, idx+1);
+    }
+
+    vector<suint> valad = g.valeursAdmissiblesDiag(i, j);
+
+    for (suint v : valad) {
+
+        if (isValidDiag(g, i, j, v)) {
+
+            g.grille[i][j] = v;
+
+            bool ok = solveRecDiag(g, cases, idx+1);
+
+            if (ok) return true;
+        }
+        g.grille[i][j] = 0;
+    }
+
+    return false;
+}
 
 
 inline void Sudoku::Solve() { 
@@ -165,6 +215,22 @@ inline void Sudoku::Solve() {
                 g.casesVides.push_back({i, j});
 
     bool ok = solveRec(g, g.casesVides, 0);  
+
+}
+
+inline void Sudoku::SolveDiag() { 
+    Grille g = grille_ini;
+
+    g.n = ordre;                 
+    suint N = g.n * g.n;         
+
+    g.casesVides.clear();        
+    for (suint i = 0; i < N; ++i)
+        for (suint j = 0; j < N; ++j)
+            if (g.grille[i][j] == 0)
+                g.casesVides.push_back({i, j});
+
+    bool ok = solveRecDiag(g, g.casesVides, 0);  
 
 }
 
@@ -213,6 +279,49 @@ inline void Sudoku::preparerGrilleUnique() {
 }
 
 
+
+inline void Sudoku::preparerGrilleUniqueDiag() {
+    suint N = ordre * ordre;
+
+
+    // Vérifier si la grille a déjà une solution unique
+    this->allSol = true;       // on veut récupérer toutes les solutions
+    this->grille_sol.clear();  // on vide la liste des solutions
+    this->SolveDiag();             // résoudre la grille
+
+    if (grille_sol.size() == 1) {
+        // La grille est déjà unique
+        uniqueSol = true;
+        return; // plus besoin de fixer d'autres cases
+    }
+
+    // Boucle jusqu'à ce qu'il n'y ait plus qu'une seule solution
+    while (grille_sol.size() > 1) {
+    const Grille& s1 = grille_sol.front();
+    const Grille& s2 = grille_sol.back();
+
+    bool caseFixee = false;
+
+    for (suint i = 0; i < N && !caseFixee; ++i) {
+        for (suint j = 0; j < N && !caseFixee; ++j) {
+            if (grille_ini.grille[i][j] == 0 && s1.grille[i][j] != s2.grille[i][j]) {
+                grille_ini.grille[i][j] = s1.grille[i][j];
+                caseFixee = true;
+            }
+        }
+    }
+
+    if (!caseFixee) break; // ← sécurité
+
+    grille_sol.clear();
+    this->allSol = true;   // ← reset
+    this->SolveDiag();
+    }   
+
+    // À ce stade, la grille est à solution unique
+    uniqueSol = true;
+    grille_sol.clear();
+}
 
 inline void Sudoku::jouer()
 {
@@ -401,6 +510,9 @@ inline void Sudoku::jouerGraphique()
 
                 caseRect.setPosition(j * tailleCase, i * tailleCase);
                 caseRect.setFillColor(sf::Color::White);
+                if (grille_ini.grille[i][j] != 0){
+                    caseRect.setFillColor(sf::Color(230, 230, 230)); // gris clair 
+                    }
                 caseRect.setOutlineColor(sf::Color::Black);
                 caseRect.setOutlineThickness(1);
 

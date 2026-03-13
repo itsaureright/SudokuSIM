@@ -32,8 +32,29 @@ int main(int argc, char *argv[])
         cout << "Tu as choisi : generer une grille unique.\n"; 
         int ordre; 
         int nbCases;
+        int Diag;
         cout << "Donne l'ordre de la grille (ex : 3 pour un 9x9) : "; cin >> ordre;
         cout << "Donne le nombre de cases a remplir initialement (ce nombre peut augmenter pour avoir une grille unique) : "; cin >> nbCases;
+        cout << "Souhaites tu un sudoku classique (0) ou un sudoku diagonal (1)"; cin >> Diag;
+        //Diag 
+        if (Diag == 1 ) {
+        Sudoku S(ordre, nbCases, false, false); 
+        cout << "Grille initiale :\n";
+        S.grille_ini.genererGrillePartielleDiag(nbCases);
+        S.grille_ini.afficher();
+        cout << "Grille unique :\n";
+        S.preparerGrilleUniqueDiag();
+        S.grille_ini.afficher();
+        cout << "Solution unique :\n";
+        S.SolveDiag();
+        for (const Grille& sol : S.grille_sol) {
+        sol.afficher();
+        }
+        if (S.grille_sol.empty()){
+            cout << "Il n'y a pas de solutions." ;
+        }
+        }
+        else if(Diag == 0){
         cout << "\nGeneration d'une grille de taille " << ordre*ordre << "x" << ordre*ordre << " avec " << nbCases << " cases vides.\n";
         Sudoku S(ordre, nbCases, false, false); 
         cout << "Grille initiale :\n";
@@ -47,6 +68,7 @@ int main(int argc, char *argv[])
         for (const Grille& sol : S.grille_sol) {
         sol.afficher();
         }
+    }
     }
 
     else if (choix == "2") {
