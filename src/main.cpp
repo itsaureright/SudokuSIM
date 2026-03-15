@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
         int nbCases;
         int Diag;
         cout << "Donne l'ordre de la grille (ex : 3 pour un 9x9) : "; cin >> ordre;
-        cout << "Donne le nombre de cases a remplir initialement (ce nombre peut augmenter pour avoir une grille unique) : "; cin >> nbCases;
+        cout << "Donne le nombre de cases a remplir initialement (ce nombre peut augmenter ou diminuer pour avoir une grille unique) : "; cin >> nbCases;
         cout << "Souhaites tu un sudoku classique (0) ou un sudoku diagonal (1)"; cin >> Diag;
         //Diag 
         if (Diag == 1 ) {
@@ -67,6 +67,24 @@ int main(int argc, char *argv[])
         S.Solve();
         for (const Grille& sol : S.grille_sol) {
         sol.afficher();
+        }
+        suint a = nbCases ;
+        for (suint n = 1; n < a; ++n){
+            if (S.grille_sol.empty()){
+                cout << "Pas de solution trouvée pour le nombre de départ que tu as choisis, nous allons générer une autre grille avec un nombre de cases initial inférieur :\n" ;
+                nbCases = nbCases -1 ;
+                cout << "Grille initiale :\n";
+            S.grille_ini.genererGrillePartielle(nbCases);
+            S.grille_ini.afficher();
+            cout << "Grille unique :\n";
+            S.preparerGrilleUnique();
+            S.grille_ini.afficher();
+            cout << "Solution unique :\n";
+            S.Solve();
+            for (const Grille& sol : S.grille_sol) {
+            sol.afficher();
+            }
+        }
         }
     }
     }
@@ -114,8 +132,7 @@ int main(int argc, char *argv[])
     S.grille_ini.genererGrillePartielle(nbCases);
     S.allSol = false;   // on veut juste savoir si une solution existe
     S.Solve(); 
-    nbiter += 1 ;
-    cout << "reload\n";}
+    nbiter += 1 ;}
 
     S.grille_sol.clear();
     S.preparerGrilleUnique();
