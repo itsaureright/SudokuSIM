@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
              << "  - 1 si tu veux generer une grille unique et sa solution\n"
              << "  - 2 si tu veux jouer toi-meme au sudoku\n\n"
              << "Puis relance le programme avec l'option choisie.\n"
-             << "Exemple : ./main 1\n";
+             << "Exemple : ./output/main 1\n";
         return 0;
     }
 
